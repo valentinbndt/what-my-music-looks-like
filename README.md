@@ -1,4 +1,4 @@
-# CD Player — what my music looks like
+# CD Player - what my music looks like
 
 > Projet d'apprentissage (cours Web Technologies) : une application web qui transforme mes dernières écoutes Last.fm en quelque chose à regarder.
 
@@ -13,7 +13,7 @@ Un lecteur CD façon vieux Windows (années 20 peu brumeux :
 
 ## Comment ça marche
 
-Navigateur ──► mon serveur ──► Last.fm (user.getRecentTracks)
+Navigateur --> mon serveur --> Last.fm (user.getRecentTracks)
 
 - Le navigateur ne parle **qu'à mon serveur**, jamais directement à Last.fm.
 - La **clé API** reste sur le serveur, dans (fichier `.env`). Elle n'est jamais dans lecode ni sur GitHub.
