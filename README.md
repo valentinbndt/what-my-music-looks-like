@@ -33,11 +33,11 @@ Navigateur ──► mon serveur ──► Last.fm (user.getRecentTracks)
 
 Le fichier .env est listé dans .gitignore : il n'est jamais envoyé sur GitHub.
 
-Lancer l'application
+## Lancer l'application
 
 En cours de construction : docker compose up arrive à la prochaine étape.
 
-Avancement
+## Avancement
 
 - [x] Initialisation du projet
 - [ ] Serveur Flask avec Docker
