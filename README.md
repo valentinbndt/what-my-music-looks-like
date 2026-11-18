@@ -49,8 +49,8 @@ Puis ouvrir <http://localhost:8080>.
 - [x] Serveur Flask avec Docker
 - [x] Appel à Last.fm
 - [x] Cache des réponses
-- [ ] Gestion des erreurs
-- [ ] Première page
+- [x] Gestion des erreurs
+- [x] Première page
 - [ ] Fenêtre CD Player
 - [ ] Discman
 - [ ] Boutons et changement de CD

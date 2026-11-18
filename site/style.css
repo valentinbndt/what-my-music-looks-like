@@ -1,0 +1,37 @@
+body {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 16px;
+  font-family: system-ui, sans-serif;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid #ddd;
+}
+
+.cover {
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  object-fit: cover;
+  background: #ccc;
+}
+
+li strong,
+li span {
+  display: block;
+}
+
+li span {
+  color: #666;
+  font-size: 14px;
+}

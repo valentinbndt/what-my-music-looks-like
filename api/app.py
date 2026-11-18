@@ -1,13 +1,15 @@
+import hashlib
 import os
 import threading
 import time
 
 import requests
-from flask import Flask, jsonify
+from flask import Flask, Response, abort, jsonify
 
 API_KEY = os.environ.get("LASTFM_API_KEY", "")
 USER = os.environ.get("LASTFM_USER", "")
 LASTFM_URL = "https://ws.audioscrobbler.com/2.0/"
+LASTFM_NO_COVER = "2a96cbd8b46e442fc41c2b86b821562f"
 CACHE_SECONDS = 60
 RETRY_SECONDS = 15
 
@@ -15,6 +17,19 @@ app = Flask(__name__)
 
 cache = {"tracks": None, "time": 0.0, "error_time": 0.0}
 cache_lock = threading.Lock()
+
+# Pochettes : le navigateur demande /api/cover/<id>, le serveur va chercher l'image lui-même.
+cover_urls = {}   # id -> adresse de l'image chez Last.fm
+cover_files = {}  # id -> (type de l'image, contenu de l'image)
+
+
+def remember_cover(images):
+    url = images[-1]["#text"] if images else ""
+    if not url or LASTFM_NO_COVER in url:
+        return None
+    cover_id = hashlib.sha1(url.encode()).hexdigest()[:16]
+    cover_urls[cover_id] = url
+    return f"/api/cover/{cover_id}"
 
 
 def call_lastfm():
@@ -45,6 +60,7 @@ def call_lastfm():
                 "title": item["name"],
                 "artist": item["artist"]["#text"],
                 "album": item["album"]["#text"],
+                "cover": remember_cover(item.get("image", [])),
                 "playing": item.get("@attr", {}).get("nowplaying") == "true",
                 "time": int(item["date"]["uts"]) if "date" in item else None,
             }
@@ -78,3 +94,23 @@ def tracks():
         cache_age=round(age),
         stale=age >= CACHE_SECONDS,
     )
+
+
+@app.get("/api/cover/<cover_id>")
+def cover(cover_id):
+    url = cover_urls.get(cover_id)
+    if url is None:
+        abort(404)
+
+    if cover_id not in cover_files:
+        try:
+            reply = requests.get(url, timeout=5)
+            reply.raise_for_status()
+        except requests.RequestException:
+            abort(502)
+        if len(cover_files) > 200:
+            cover_files.clear()
+        cover_files[cover_id] = (reply.headers.get("Content-Type", "image/jpeg"), reply.content)
+
+    content_type, data = cover_files[cover_id]
+    return Response(data, mimetype=content_type, headers={"Cache-Control": "public, max-age=86400"})
