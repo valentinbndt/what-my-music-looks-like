@@ -2,13 +2,25 @@
 <meta charset="utf-8">
 <title>CD Player</title>
 <h1 id="out">Chargement...</h1>
+<p id="note"></p>
 <script>
   fetch("/api/tracks")
     .then((r) => r.json())
     .then((d) => {
+      if (d.error) {
+        out.textContent = d.error;
+        return;
+      }
+      if (d.tracks.length === 0) {
+        out.textContent = "Aucune écoute pour l'instant. Lance un morceau !";
+        return;
+      }
       const t = d.tracks[0];
       const etat = t.playing ? "En écoute" : "Dernière écoute";
       out.textContent = `${etat} : ${t.title} — ${t.artist}`;
+      if (d.stale) {
+        note.textContent = "Last.fm ne répond pas : voici les dernières écoutes connues.";
+      }
     })
-    .catch(() => (out.textContent = "Le serveur ne répond pas"));
+    .catch(() => (out.textContent = "Le serveur ne répond pas."));
 </script>
