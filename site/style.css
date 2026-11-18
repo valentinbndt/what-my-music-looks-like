@@ -1,37 +1,276 @@
+:root {
+  --sky-1: #eef9fc;
+  --sky-2: #bfe2ee;
+  --sky-3: #86c1d8;
+  --panel: #ece7d6;
+  --panel-dark: #8b8574;
+  --panel-light: #ffffff;
+  --ink: #1d1d1d;
+  --ink-soft: #555046;
+  --blue-dark: #0b36a3;
+  --blue: #2a5fd0;
+  --blue-light: #a8c8f0;
+  --lcd: #0d1310;
+  --lcd-text: #4dff7c;
+  --pixel: "VT323", "Courier New", monospace;
+  --mono: "IBM Plex Mono", "Courier New", monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
 body {
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 16px;
-  font-family: system-ui, sans-serif;
+  margin: 0;
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 32px 16px;
+  font-family: var(--mono);
+  color: var(--ink);
+  background: radial-gradient(ellipse at 50% 35%, var(--sky-1), var(--sky-2) 50%, var(--sky-3));
 }
 
-ul {
-  list-style: none;
-  padding: 0;
+/* Rayons de lumière qui tombent du haut */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: conic-gradient(from 160deg at 50% -20%,
+    transparent 0deg, rgba(255, 255, 255, 0.35) 8deg, transparent 18deg,
+    transparent 30deg, rgba(255, 255, 255, 0.25) 40deg, transparent 52deg);
 }
 
-li {
+/* Grain de vieille photo */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.22;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .3  0 0 0 0 .4  0 0 0 0 .5  0 0 0 .5 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+/* ---------- La fenêtre ---------- */
+.window {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 560px);
+  background: var(--panel);
+  border: 1px solid #5a6b8c;
+  box-shadow: inset 1px 1px 0 var(--panel-light), 0 18px 40px -12px rgba(20, 50, 80, 0.45);
+}
+
+.titlebar {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 8px 0;
-  border-bottom: 1px solid #ddd;
+  gap: 10px;
+  padding: 6px 6px 6px 10px;
+  color: #fff;
+  background: linear-gradient(90deg, var(--blue-dark), var(--blue) 45%, var(--blue-light));
 }
 
-.cover {
-  width: 56px;
-  height: 56px;
-  flex-shrink: 0;
-  object-fit: cover;
-  background: #ccc;
+.titlebar__icon {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff 0 18%, #b9c3cf 20% 60%, #e8edf2 62%);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25);
 }
 
-li strong,
-li span {
+.titlebar__title {
+  flex: 1;
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.35);
+}
+
+.titlebar__close {
+  width: 28px;
+  height: 26px;
+  border: 0;
+  font: 600 14px var(--mono);
+  background: var(--panel);
+  box-shadow: inset -2px -2px var(--panel-dark), inset 2px 2px var(--panel-light);
+  cursor: pointer;
+}
+
+.window__body {
+  display: grid;
+  gap: 16px;
+  padding: 18px;
+}
+
+/* ---------- Pochette, titre, LCD ---------- */
+.now {
+  display: grid;
+  grid-template-columns: 96px 1fr auto;
+  align-items: center;
+  gap: 16px;
+}
+
+.now__cover {
+  width: 96px;
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  padding: 3px;
+  overflow: hidden;
+  font-size: 32px;
+  color: #9fb3c8;
+  background: #2b3440;
+  box-shadow: inset 2px 2px var(--panel-dark), inset -2px -2px var(--panel-light);
+}
+
+.now__cover img {
   display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
-li span {
-  color: #666;
-  font-size: 14px;
+.now__text {
+  min-width: 0;
+}
+
+.now__title,
+.now__artist {
+  margin: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.now__title {
+  margin-bottom: 8px;
+  font-size: 22px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.now__artist {
+  font-size: 17px;
+  color: var(--ink-soft);
+}
+
+.lcd {
+  display: grid;
+  gap: 2px;
+  min-width: 130px;
+  padding: 8px 14px;
+  text-align: right;
+  font: 26px/1 var(--pixel);
+  color: var(--lcd-text);
+  text-shadow: 0 0 6px rgba(77, 255, 124, 0.55);
+  background: var(--lcd);
+  box-shadow: inset 2px 2px rgba(0, 0, 0, 0.6);
+}
+
+.lcd__track {
+  font-size: 18px;
+  opacity: 0.7;
+}
+
+.lcd.is-playing .lcd__status {
+  animation: blink 1.4s steps(2, start) infinite;
+}
+
+@keyframes blink {
+  to { visibility: hidden; }
+}
+
+/* ---------- Barre de progression ---------- */
+.progress {
+  height: 28px;
+  padding: 3px;
+  background: #fff;
+  box-shadow: inset 2px 2px var(--panel-dark), inset -1px -1px var(--panel-light);
+}
+
+.progress__fill {
+  width: 0;
+  height: 100%;
+  background: repeating-linear-gradient(90deg, var(--blue) 0 12px, transparent 12px 16px);
+}
+
+.progress.is-playing .progress__fill {
+  animation: fill 8s steps(20) infinite;
+}
+
+.progress.is-done .progress__fill {
+  width: 100%;
+}
+
+@keyframes fill {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+/* ---------- Boutons ---------- */
+.controls {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+
+.btn {
+  height: 56px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  background: var(--panel);
+  box-shadow: inset -2px -2px var(--panel-dark), inset 2px 2px var(--panel-light), 0 0 0 1px #b9b29f;
+  cursor: pointer;
+}
+
+.btn:active {
+  box-shadow: inset 2px 2px var(--panel-dark), inset -2px -2px var(--panel-light), 0 0 0 1px #b9b29f;
+}
+
+.btn:focus-visible,
+.btn.is-active {
+  outline: 3px solid var(--blue);
+  outline-offset: -3px;
+}
+
+.btn svg {
+  width: 30px;
+  height: 30px;
+}
+
+/* ---------- Barre d'état ---------- */
+.statusbar {
+  margin: 0;
+  padding: 6px 10px;
+  font-size: 13px;
+  color: var(--ink-soft);
+  box-shadow: inset 1px 1px var(--panel-dark), inset -1px -1px var(--panel-light);
+}
+
+/* ---------- Petit écran ---------- */
+@media (max-width: 520px) {
+  .now {
+    grid-template-columns: 72px 1fr;
+  }
+  .now__cover {
+    width: 72px;
+  }
+  .lcd {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: space-between;
+  }
+  .btn {
+    height: 48px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lcd.is-playing .lcd__status,
+  .progress.is-playing .progress__fill {
+    animation: none;
+  }
 }

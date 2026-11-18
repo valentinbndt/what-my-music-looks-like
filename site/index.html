@@ -4,12 +4,58 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>CD Player</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=VT323&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Mes dernières écoutes</h1>
-  <p id="message">Chargement...</p>
-  <ul id="list"></ul>
+  <main class="window" aria-label="CD Player">
+    <header class="titlebar">
+      <span class="titlebar__icon" aria-hidden="true"></span>
+      <h1 class="titlebar__title">CD Player</h1>
+      <button class="titlebar__close" type="button" aria-label="Fermer">x</button>
+    </header>
+
+    <div class="window__body">
+      <section class="now">
+        <div class="now__cover" id="cover"></div>
+        <div class="now__text">
+          <p class="now__title" id="title">Chargement…</p>
+          <p class="now__artist" id="artist">&nbsp;</p>
+        </div>
+        <div class="lcd" id="lcd">
+          <span class="lcd__track" id="lcd-track">--/--</span>
+          <span class="lcd__status" id="lcd-status">--:--</span>
+        </div>
+      </section>
+
+      <div class="progress" id="progress">
+        <div class="progress__fill"></div>
+      </div>
+
+      <div class="controls">
+        <button class="btn" id="btn-prev" type="button" aria-label="Morceau précédent">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect width="24" height="24" rx="5" fill="#2f63c9"/><rect x="6" y="6" width="2.5" height="12" fill="#fff"/><path d="M18 6 9.5 12 18 18Z" fill="#fff"/></svg>
+        </button>
+        <button class="btn" id="btn-pause" type="button" aria-label="Pause">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect width="24" height="24" rx="5" fill="#2f63c9"/><rect x="7" y="6" width="3.5" height="12" fill="#fff"/><rect x="13.5" y="6" width="3.5" height="12" fill="#fff"/></svg>
+        </button>
+        <button class="btn" id="btn-stop" type="button" aria-label="Stop">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect width="24" height="24" rx="5" fill="#2f63c9"/><rect x="7" y="7" width="10" height="10" rx="1" fill="#fff"/></svg>
+        </button>
+        <button class="btn" id="btn-next" type="button" aria-label="Morceau suivant">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect width="24" height="24" rx="5" fill="#2f63c9"/><path d="M6 6 14.5 12 6 18Z" fill="#fff"/><rect x="15.5" y="6" width="2.5" height="12" fill="#fff"/></svg>
+        </button>
+        <button class="btn" id="btn-eject" type="button" aria-label="Voir mes CD">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5 20 14H4Z" fill="#1d1d1d"/><rect x="4" y="16" width="16" height="3" fill="#1d1d1d"/></svg>
+        </button>
+      </div>
+
+      <p class="statusbar" id="message">Connexion au serveur…</p>
+    </div>
+  </main>
+
   <script src="app.js"></script>
 </body>
 </html>
