@@ -33,7 +33,7 @@ def remember_cover(images):
         return None
     cover_id = hashlib.sha1(url.encode()).hexdigest()[:16]
     cover_urls[cover_id] = url
-    return f"/api/cover/{cover_id}"
+    return f"api/cover/{cover_id}"
 
 
 def ask_duration(track):
@@ -99,7 +99,6 @@ def call_lastfm():
                 "time": int(item["date"]["uts"]) if "date" in item else None,
             }
         )
-    fill_durations(tracks)
     return tracks
 
 

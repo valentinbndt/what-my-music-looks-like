@@ -1,0 +1,16 @@
+services:
+  site:
+    ports: !reset []
+    restart: unless-stopped
+    networks:
+      default:
+      web:
+        aliases:
+          - music
+
+  api:
+    restart: unless-stopped
+
+networks:
+  web:
+    external: true

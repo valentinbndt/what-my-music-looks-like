@@ -300,7 +300,7 @@ document.addEventListener("keydown", (event) => {
 // ---------- Les données ----------
 async function refresh() {
   try {
-    const reply = await fetch("/api/tracks");
+    const reply = await fetch("api/tracks");
     const d = await reply.json().catch(() => null);
     if (!d) throw new Error("Le serveur ne répond pas.");
     if (d.error) throw new Error(d.error);
