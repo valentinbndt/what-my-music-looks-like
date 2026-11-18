@@ -3,8 +3,12 @@
 <title>CD Player</title>
 <h1 id="out">Chargement...</h1>
 <script>
-  fetch("/api/hello")
+  fetch("/api/tracks")
     .then((r) => r.json())
-    .then((d) => (out.textContent = d.message))
+    .then((d) => {
+      const t = d.tracks[0];
+      const etat = t.playing ? "En écoute" : "Dernière écoute";
+      out.textContent = `${etat} : ${t.title} — ${t.artist}`;
+    })
     .catch(() => (out.textContent = "Le serveur ne répond pas"));
 </script>

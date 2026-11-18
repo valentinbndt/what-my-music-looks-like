@@ -11,3 +11,6 @@ services:
 
   api:
     build: ./api
+    environment:
+      LASTFM_API_KEY: ${LASTFM_API_KEY}
+      LASTFM_USER: ${LASTFM_USER}
