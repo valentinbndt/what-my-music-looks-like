@@ -10,52 +10,161 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <main class="window" aria-label="CD Player">
-    <header class="titlebar">
-      <span class="titlebar__icon" aria-hidden="true"></span>
-      <h1 class="titlebar__title">CD Player</h1>
-      <button class="titlebar__close" type="button" aria-label="Fermer">x</button>
-    </header>
+  <div class="stage">
 
-    <div class="window__body">
-      <section class="now">
-        <div class="now__cover" id="cover"></div>
-        <div class="now__text">
-          <p class="now__title" id="title">Chargement…</p>
-          <p class="now__artist" id="artist">&nbsp;</p>
-        </div>
-        <div class="lcd" id="lcd">
-          <span class="lcd__track" id="lcd-track">--/--</span>
-          <span class="lcd__status" id="lcd-status">--:--</span>
-        </div>
-      </section>
+    <!-- Le Discman : un modèle 3D (discman3d.js) ; le dessin SVG sert de secours sans 3D -->
+    <div class="discman-box" id="discman-box">
+    <canvas class="discman-3d" id="discman-3d" aria-hidden="true"></canvas>
+    <svg class="discman" id="discman" viewBox="0 0 420 340" aria-hidden="true">
+      <defs>
+        <linearGradient id="dm-top" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#f6f7f8"/><stop offset=".55" stop-color="#d3d7db"/><stop offset="1" stop-color="#aeb3b9"/>
+        </linearGradient>
+        <linearGradient id="dm-side" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#9aa0a7"/><stop offset="1" stop-color="#6d737a"/>
+        </linearGradient>
+        <radialGradient id="dm-lid" cx=".38" cy=".32" r=".8">
+          <stop offset="0" stop-color="#f7f8f9"/><stop offset=".6" stop-color="#c4c9ce"/><stop offset="1" stop-color="#959ba2"/>
+        </radialGradient>
+        <radialGradient id="dm-well" cx=".5" cy=".45" r=".6">
+          <stop offset="0" stop-color="#21497a"/><stop offset="1" stop-color="#0b1a2e"/>
+        </radialGradient>
+        <linearGradient id="dm-cd" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#cfdbe8"/><stop offset=".25" stop-color="#f3e6f6"/><stop offset=".5" stop-color="#d2f0e6"/><stop offset=".75" stop-color="#f7f0cf"/><stop offset="1" stop-color="#d6d2f2"/>
+        </linearGradient>
+        <linearGradient id="dm-shine" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".35" stop-color="#fff" stop-opacity=".35"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/>
+        </linearGradient>
+        <clipPath id="dm-cd-clip"><circle r="116"/></clipPath>
+        <filter id="dm-blur" x="-20%" y="-60%" width="140%" height="220%"><feGaussianBlur stdDeviation="9"/></filter>
+      </defs>
 
-      <div class="progress" id="progress">
-        <div class="progress__fill"></div>
-      </div>
+      <!-- Ombre au sol -->
+      <ellipse cx="214" cy="318" rx="176" ry="16" fill="rgba(20,50,80,.38)" filter="url(#dm-blur)"/>
 
-      <div class="controls">
-        <button class="btn" id="btn-prev" type="button" aria-label="Morceau précédent">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><rect width="24" height="24" rx="5" fill="#2f63c9"/><rect x="6" y="6" width="2.5" height="12" fill="#fff"/><path d="M18 6 9.5 12 18 18Z" fill="#fff"/></svg>
-        </button>
-        <button class="btn" id="btn-pause" type="button" aria-label="Pause">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><rect width="24" height="24" rx="5" fill="#2f63c9"/><rect x="7" y="6" width="3.5" height="12" fill="#fff"/><rect x="13.5" y="6" width="3.5" height="12" fill="#fff"/></svg>
-        </button>
-        <button class="btn" id="btn-stop" type="button" aria-label="Stop">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><rect width="24" height="24" rx="5" fill="#2f63c9"/><rect x="7" y="7" width="10" height="10" rx="1" fill="#fff"/></svg>
-        </button>
-        <button class="btn" id="btn-next" type="button" aria-label="Morceau suivant">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><rect width="24" height="24" rx="5" fill="#2f63c9"/><path d="M6 6 14.5 12 6 18Z" fill="#fff"/><rect x="15.5" y="6" width="2.5" height="12" fill="#fff"/></svg>
-        </button>
-        <button class="btn" id="btn-eject" type="button" aria-label="Voir mes CD">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5 20 14H4Z" fill="#1d1d1d"/><rect x="4" y="16" width="16" height="3" fill="#1d1d1d"/></svg>
-        </button>
-      </div>
+      <!-- Couvercle ouvert, penché vers l'arrière et un peu sur la droite -->
+      <g transform="translate(236 106) rotate(-13)">
+        <ellipse cx="6" cy="9" rx="144" ry="110" fill="#7f858c"/>
+        <ellipse rx="144" ry="110" fill="url(#dm-lid)"/>
+        <ellipse rx="144" ry="110" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="3"/>
+        <g fill="none" stroke="#000" stroke-opacity=".14" stroke-width="3">
+          <ellipse rx="116" ry="88"/>
+          <ellipse rx="84" ry="63"/>
+          <ellipse rx="48" ry="36"/>
+          <path d="M0 -110V110M-144 0H144M-102 -78 102 78M-102 78 102 -78"/>
+        </g>
+        <ellipse rx="16" ry="12" fill="#cfd4d9" stroke="#000" stroke-opacity=".18" stroke-width="2"/>
+      </g>
 
-      <p class="statusbar" id="message">Connexion au serveur…</p>
+      <!-- Charnières -->
+      <rect x="160" y="138" width="22" height="20" rx="4" fill="#8d939a"/>
+      <rect x="246" y="136" width="22" height="20" rx="4" fill="#8d939a"/>
+
+      <!-- Le corps : d'abord l'épaisseur, puis le dessus -->
+      <rect x="38" y="162" width="344" height="152" rx="90" ry="72" fill="url(#dm-side)"/>
+      <rect x="38" y="136" width="344" height="152" rx="90" ry="72" fill="url(#dm-top)"/>
+      <rect x="40" y="138" width="340" height="148" rx="88" ry="70" fill="none" stroke="#fff" stroke-opacity=".7" stroke-width="2"/>
+
+      <!-- Le creux, puis le CD (qui sort et rentre quand on change de disque) -->
+      <ellipse cx="210" cy="212" rx="136" ry="66" fill="#a7adb3"/>
+      <ellipse cx="210" cy="210" rx="128" ry="60" fill="url(#dm-well)"/>
+      <g class="cd-slot">
+        <g transform="translate(210 210) scale(1 .47)">
+          <g class="cd">
+            <circle r="124" fill="url(#dm-cd)"/>
+            <circle r="116" fill="#2a5fd0"/>
+            <image id="cd-cover" x="-116" y="-116" width="232" height="232" preserveAspectRatio="xMidYMid slice" clip-path="url(#dm-cd-clip)"/>
+            <circle r="26" fill="#d9dfe5"/>
+            <circle r="26" fill="none" stroke="#000" stroke-opacity=".2" stroke-width="2"/>
+            <circle r="10" fill="#0b1a2e"/>
+          </g>
+        </g>
+      </g>
+      <!-- Reflet : posé sur le CD, mais il ne tourne pas -->
+      <ellipse cx="210" cy="210" rx="128" ry="60" fill="url(#dm-shine)"/>
+      <ellipse cx="210" cy="210" rx="9" ry="5" fill="#c9ced4"/>
+
+      <!-- Boutons ronds sur le bord gauche -->
+      <g fill="#e4e7ea" stroke="#8d939a" stroke-width="2">
+        <circle cx="70" cy="236" r="8"/>
+        <circle cx="82" cy="257" r="8"/>
+        <circle cx="100" cy="274" r="8"/>
+      </g>
+
+      <!-- Face avant : petit écran, boutons, prise casque -->
+      <rect class="discman__screen" x="168" y="292" width="84" height="18" rx="3" stroke="#7d838a" stroke-width="2"/>
+      <rect x="266" y="294" width="28" height="12" rx="6" fill="#dfe3e6" stroke="#7d838a" stroke-width="1.5"/>
+      <rect x="300" y="292" width="28" height="12" rx="6" fill="#dfe3e6" stroke="#7d838a" stroke-width="1.5"/>
+      <circle cx="140" cy="300" r="7" fill="#dfe3e6" stroke="#7d838a" stroke-width="1.5"/>
+      <circle cx="372" cy="250" r="4" fill="#3a3f45"/>
+    </svg>
     </div>
-  </main>
+
+    <!-- La fenêtre principale -->
+    <main class="window" aria-label="CD Player">
+      <header class="titlebar">
+        <span class="titlebar__icon" aria-hidden="true"></span>
+        <h1 class="titlebar__title">CD Player</h1>
+        <span class="titlebar__close" aria-hidden="true">x</span>
+      </header>
+
+      <div class="window__body">
+        <section class="now" id="now">
+          <div class="now__cover" id="cover"></div>
+          <div class="now__text">
+            <p class="now__title" id="title">Chargement…</p>
+            <p class="now__artist" id="artist">&nbsp;</p>
+            <p class="now__when" id="when">&nbsp;</p>
+          </div>
+          <div class="lcd" id="lcd">
+            <span class="lcd__track" id="lcd-track">--/--</span>
+            <span class="lcd__status" id="lcd-status">--:--</span>
+          </div>
+        </section>
+
+        <div class="progress" id="progress">
+          <div class="progress__fill"></div>
+        </div>
+
+        <div class="controls">
+          <button class="btn" id="btn-prev" type="button" aria-label="Morceau précédent (plus ancien)" title="Précédent (←)">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect width="24" height="24" rx="5" fill="#2f63c9"/><rect x="6" y="6" width="2.5" height="12" fill="#fff"/><path d="M18 6 9.5 12 18 18Z" fill="#fff"/></svg>
+          </button>
+          <button class="btn" id="btn-pause" type="button" aria-label="Pause" aria-pressed="false" title="Pause">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect width="24" height="24" rx="5" fill="#2f63c9"/><rect x="7" y="6" width="3.5" height="12" fill="#fff"/><rect x="13.5" y="6" width="3.5" height="12" fill="#fff"/></svg>
+          </button>
+          <button class="btn" id="btn-stop" type="button" aria-label="Revenir au morceau actuel" title="Revenir au morceau actuel">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect width="24" height="24" rx="5" fill="#2f63c9"/><rect x="7" y="7" width="10" height="10" rx="1" fill="#fff"/></svg>
+          </button>
+          <button class="btn" id="btn-next" type="button" aria-label="Morceau suivant (plus récent)" title="Suivant (→)">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect width="24" height="24" rx="5" fill="#2f63c9"/><path d="M6 6 14.5 12 6 18Z" fill="#fff"/><rect x="15.5" y="6" width="2.5" height="12" fill="#fff"/></svg>
+          </button>
+          <button class="btn" id="btn-eject" type="button" aria-label="Voir mes CD" aria-expanded="false" aria-controls="cds" title="Mes CD">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5 20 14H4Z" fill="#1d1d1d"/><rect x="4" y="16" width="16" height="3" fill="#1d1d1d"/></svg>
+          </button>
+        </div>
+
+        <p class="statusbar" id="message" aria-live="polite">Connexion au serveur…</p>
+      </div>
+    </main>
+
+    <!-- La fenêtre « Mes CD », ouverte par le bouton ⏏ -->
+    <section class="window window--cds" id="cds" aria-label="Mes CD" hidden>
+      <header class="titlebar">
+        <span class="titlebar__icon" aria-hidden="true"></span>
+        <h2 class="titlebar__title">Mes CD</h2>
+        <button class="titlebar__close" id="cds-close" type="button" aria-label="Fermer Mes CD">x</button>
+      </header>
+      <div class="window__body">
+        <ul class="cds" id="cds-list"></ul>
+        <p class="statusbar" id="cds-count">&nbsp;</p>
+      </div>
+    </section>
+
+  </div>
 
   <script src="app.js"></script>
+  <script type="importmap">{ "imports": { "three": "./vendor/three.module.min.js" } }</script>
+  <script type="module" src="discman3d.js"></script>
 </body>
 </html>

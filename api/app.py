@@ -12,6 +12,7 @@ LASTFM_URL = "https://ws.audioscrobbler.com/2.0/"
 LASTFM_NO_COVER = "2a96cbd8b46e442fc41c2b86b821562f"
 CACHE_SECONDS = 60
 RETRY_SECONDS = 15
+MAX_NEW_DURATIONS = 3  # durées demandées au maximum à chaque rafraîchissement
 
 app = Flask(__name__)
 
@@ -22,6 +23,9 @@ cache_lock = threading.Lock()
 cover_urls = {}   # id -> adresse de l'image chez Last.fm
 cover_files = {}  # id -> (type de l'image, contenu de l'image)
 
+# Durées : la liste des écoutes ne les donne pas, on les demande une fois par morceau.
+durations = {}  # "artiste|titre" -> durée en secondes (None si Last.fm ne la connaît pas)
+
 
 def remember_cover(images):
     url = images[-1]["#text"] if images else ""
@@ -30,6 +34,36 @@ def remember_cover(images):
     cover_id = hashlib.sha1(url.encode()).hexdigest()[:16]
     cover_urls[cover_id] = url
     return f"/api/cover/{cover_id}"
+
+
+def ask_duration(track):
+    app.logger.warning("Duree demandee a Last.fm : %s - %s", track["artist"], track["title"])
+    reply = requests.get(
+        LASTFM_URL,
+        params={
+            "method": "track.getInfo",
+            "artist": track["artist"],
+            "track": track["title"],
+            "api_key": API_KEY,
+            "format": "json",
+        },
+        timeout=5,
+    )
+    milliseconds = int(reply.json().get("track", {}).get("duration") or 0)
+    return milliseconds // 1000 or None
+
+
+def fill_durations(tracks):
+    asked = 0
+    for track in tracks:  # du plus récent au plus ancien
+        key = f"{track['artist']}|{track['title']}"
+        if key not in durations and asked < MAX_NEW_DURATIONS:
+            asked += 1
+            try:
+                durations[key] = ask_duration(track)
+            except (requests.RequestException, ValueError):
+                pass  # on réessaiera au prochain rafraîchissement
+        track["duration"] = durations.get(key)
 
 
 def call_lastfm():
@@ -65,6 +99,7 @@ def call_lastfm():
                 "time": int(item["date"]["uts"]) if "date" in item else None,
             }
         )
+    fill_durations(tracks)
     return tracks
 
 
